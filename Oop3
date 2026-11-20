@@ -1,0 +1,96 @@
+#include <iostream>
+    #include <algorithm>
+    #include <utility>
+    using namespace std;
+
+    class NumberArray {
+    private:
+        int* data;
+        int size;
+
+    public:
+        NumberArray() : data(nullptr), size(0) {
+            cout << "Default constructor\n";
+        }
+
+        NumberArray(int n, int value) : data(new int[n]), size(n) {
+            fill(data, data + size, value);
+            cout << "Parameterized constructor\n";
+        }
+
+        // Rule of Five: deep-copy constructor.
+        NumberArray(const NumberArray& other) : data(nullptr), size(other.size) {
+            if (size > 0) {
+                data = new int[size];
+                copy(other.data, other.data + size, data);
+            }
+            cout << "Copy constructor\n";
+        }
+
+        // Rule of Five: deep-copy assignment.
+        NumberArray& operator=(const NumberArray& other) {
+            if (this != &other) {
+                int* newData = other.size ? new int[other.size] : nullptr;
+                if (other.size) copy(other.data, other.data + other.size, newData);
+                delete[] data;
+                data = newData;
+                size = other.size;
+            }
+            cout << "Copy assignment\n";
+            return *this;
+        }
+
+        // Rule of Five: move constructor transfers ownership.
+        NumberArray(NumberArray&& other) noexcept
+            : data(other.data), size(other.size) {
+            other.data = nullptr;
+            other.size = 0;
+            cout << "Move constructor\n";
+        }
+
+      // Rule of Five: move assignment transfers ownership.
+      NumberArray& operator=(NumberArray&& other) noexcept {
+          if (this != &other) {
+              delete[] data;
+              data = other.data;
+              size = other.size;
+              other.data = nullptr;
+              other.size = 0;
+          }
+          cout << "Move assignment\n";
+          return *this;
+      }
+
+      void display() const {
+          cout << "Values: ";
+          for (int i = 0; i < size; ++i) cout << data[i] << " ";
+          cout << '\n';
+      }
+
+      // Rule of Five: destructor releases the owned array.
+      ~NumberArray() {
+          delete[] data;
+          cout << "Destructor\n";
+      }
+ };
+
+ int main() {
+     cout << "Name: Tilak Kaple\n";
+      NumberArray first(3, 10);
+      first.display();
+
+      NumberArray copied(first);
+      copied.display();
+
+      NumberArray assigned;
+      assigned = first;
+      assigned.display();
+
+      NumberArray moved(std::move(first));
+      moved.display();
+
+      NumberArray moveAssigned;
+      moveAssigned = std::move(copied);
+      moveAssigned.display();
+      return 0;
+ }
