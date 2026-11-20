@@ -1,0 +1,32 @@
+#include <iostream>
+    #include <memory>
+    using namespace std;
+
+    class Sample {
+    public:
+        Sample() { cout << "Sample object created\n"; }
+        ~Sample() { cout << "Sample object destroyed\n"; }
+        void show() const { cout << "Smart pointer manages this object\n"; }
+    };
+
+    int main() {
+        cout << "Name: Tilak Kaple\n";
+
+        cout << "\nUsing unique_ptr:\n";
+        {
+            unique_ptr<Sample> oneOwner = make_unique<Sample>();
+            oneOwner->show();
+            cout << "unique_ptr has one owner.\n";
+        }
+
+        cout << "\nUsing shared_ptr:\n";
+        {
+            shared_ptr<Sample> owner1 = make_shared<Sample>();
+            shared_ptr<Sample> owner2 = owner1;
+            cout << "Number of shared owners: " << owner1.use_count() << '\n';
+            owner2->show();
+        }
+
+        cout << "\nSmart pointers automatically manage object lifetime.\n";
+        return 0;
+    }
