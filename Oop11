@@ -1,0 +1,65 @@
+#include <iostream>
+    #include <fstream>
+    #include <string>
+    using namespace std;
+
+    struct Student {
+        int id;
+        string name;
+        double marks;
+    };
+
+    int main() {
+        cout << "Name: Tilak Kaple\n";
+
+        Student students[] = {
+            {101, "Amit", 85.5},
+            {102, "Neha", 91.0},
+            {103, "Ravi", 78.5}
+        };
+
+        ofstream out("students.csv");
+        if (!out) {
+            cout << "Unable to open students.csv for writing.\n";
+            return 1;
+        }
+        out << "ID,Name,Marks\n";
+        for (const Student& s : students)
+            out << s.id << ',' << s.name << ',' << s.marks << '\n';
+        out.close();
+        cout << "Three student records written to students.csv\n";
+
+        ifstream in("students.csv");
+        if (!in) {
+            cout << "Unable to open students.csv for reading.\n";
+            return 1;
+        }
+        string line;
+        cout << "\nStudent records:\n";
+        while (getline(in, line)) cout << line << '\n';
+        in.close();
+
+        ofstream demoOut("position_demo.txt", ios::out | ios::trunc);
+        demoOut << "ABCDE";
+        demoOut.close();
+
+        fstream file("position_demo.txt", ios::in | ios::out);
+        cout << "\nInitial get position: " << file.tellg() << '\n';
+        file.seekg(2);
+        char ch;
+
+     file.get(ch);
+     cout << "Character at get position 2: " << ch << '\n';
+
+     file.seekp(1);
+     cout << "Put position after seekp(1): " << file.tellp() << '\n';
+     file.put('X');
+     file.flush();
+
+     file.seekg(0);
+     string updated;
+     file >> updated;
+     cout << "File after seekp and put: " << updated << '\n';
+     file.close();
+     return 0;
+ }
