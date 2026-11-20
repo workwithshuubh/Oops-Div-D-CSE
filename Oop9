@@ -1,0 +1,58 @@
+#include <iostream>
+    #include <stack>
+    #include <string>
+    using namespace std;
+
+    template <typename T>
+    class Stack {
+    private:
+        stack<T> items;
+
+    public:
+        void push(const T& value) {
+            items.push(value);
+        }
+
+         bool empty() const {
+             return items.empty();
+         }
+
+         bool pop() {
+             if (items.empty()) return false;
+             items.pop();
+             return true;
+         }
+
+         bool showTop() const {
+             if (items.empty()) return false;
+             cout << items.top() << '\n';
+             return true;
+         }
+    };
+
+    int main() {
+        cout << "Name: Tilak Kaple\n";
+
+         Stack<int> numbers;
+         numbers.push(10);
+         numbers.push(20);
+         cout << "Integer stack top: ";
+         numbers.showTop();
+         numbers.pop();
+
+         Stack<float> decimals;
+         decimals.push(3.5f);
+         cout << "Float stack top: ";
+         decimals.showTop();
+
+         Stack<string> words;
+         words.push("C++");
+         cout << "String stack top: ";
+         words.showTop();
+
+     Stack<int> emptyStack;
+     cout << "Pop from empty stack: "
+          << (emptyStack.pop() ? "Success" : "Not possible - stack is empty")
+          << '\n';
+     return 0;
+ }
