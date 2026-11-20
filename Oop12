@@ -1,0 +1,455 @@
+#include <iostream>
+
+#include <fstream>
+
+#include <vector>
+
+#include <algorithm>
+
+#include <stdexcept>
+
+#include <string>
+
+#include <sstream>
+
+#include <limits>
+
+using namespace std;
+
+// Book class
+
+class Book {
+
+private:
+
+    int id;
+
+    string title;
+
+    string author;
+
+    bool available;
+
+public:
+
+    Book(int bookId, const string& bookTitle,
+
+            const string& bookAuthor, bool isAvailable = true)
+
+           : id(bookId), title(bookTitle),
+
+             author(bookAuthor), available(isAvailable) {}
+
+int getId() const {
+
+           return id;
+
+    }
+
+    void issue() {
+
+           if (!available)
+
+               throw runtime_error("Book is already issued.");
+
+           available = false;
+
+    }
+
+    void returnBook() {
+
+           if (available)
+
+               throw runtime_error("Book is already available.");
+
+           available = true;
+
+     }
+
+     void display() const {
+
+           cout << id << " | " << title << " | "
+
+                << author << " | "
+
+                << (available ? "Available" : "Issued") << '\n';
+
+     }
+
+     void save(ofstream& out) const {
+
+           out << id << '|' << title << '|'
+
+               << author << '|'
+
+               << (available ? 1 : 0) << '\n';
+
+     }
+
+};
+
+// Library class
+
+class Library {
+
+private:
+
+     vector<Book> books;
+
+     Book* findBook(int id) {
+
+           auto it = find_if(books.begin(), books.end(),
+
+               [id](const Book& book) {
+
+                     return book.getId() == id;
+
+               });
+
+           if (it == books.end())
+
+               return nullptr;
+
+           return &(*it);
+
+     }
+
+public:
+
+     // Add a new book
+
+void addBook(const Book& book) {
+
+    if (findBook(book.getId()))
+
+        throw runtime_error(
+
+            "A book with this ID already exists.");
+
+    books.push_back(book);
+
+}
+
+// Search book by ID
+
+void searchBook(int id) {
+
+    Book* book = findBook(id);
+
+    if (!book)
+
+        throw runtime_error("Book ID not found.");
+
+    cout << "Book found:\n";
+
+    cout << "ID | Title | Author | Status\n";
+
+    book->display();
+
+}
+
+// Display all books
+
+void listBooks() const {
+
+    if (books.empty()) {
+
+        cout << "No books found in the library.\n";
+
+        return;
+
+    }
+
+    cout << "ID | Title | Author | Status\n";
+
+    for (const Book& book : books)
+
+        book.display();
+
+}
+
+// Issue a book
+
+void issueBook(int id) {
+
+    Book* book = findBook(id);
+
+    if (!book)
+
+        throw runtime_error("Book ID not found.");
+
+    book->issue();
+
+    cout << "Book issued successfully.\n";
+
+}
+
+// Return a book
+
+void returnBook(int id) {
+
+    Book* book = findBook(id);
+
+    if (!book)
+
+        throw runtime_error("Book ID not found.");
+
+    book->returnBook();
+
+    cout << "Book returned successfully.\n";
+
+}
+
+// Save records to file
+
+void saveToFile(const string& filename) const {
+
+    ofstream out(filename);
+
+    if (!out)
+
+        throw runtime_error("Unable to save library file.");
+
+    for (const Book& book : books)
+
+        book.save(out);
+
+}
+
+// Load records from file
+
+void loadFromFile(const string& filename) {
+
+    ifstream in(filename);
+
+    if (!in)
+
+        return;
+
+         books.clear();
+
+         string line;
+
+         while (getline(in, line)) {
+
+               string idText, title, author, statusText;
+
+               stringstream ss(line);
+
+               if (!getline(ss, idText, '|') ||
+
+                   !getline(ss, title, '|') ||
+
+                   !getline(ss, author, '|') ||
+
+                   !getline(ss, statusText))
+
+                   continue;
+
+               try {
+
+                   int id = stoi(idText);
+
+                   bool available = (statusText == "1");
+
+                   books.emplace_back(
+
+                        id, title, author, available);
+
+               }
+
+               catch (const exception&) {
+
+                   // Skip invalid records.
+
+               }
+
+         }
+
+     }
+
+};
+
+// Read and validate book ID
+
+int readBookId() {
+
+     int id;
+
+     while (true) {
+
+         cout << "Enter Book ID: ";
+
+         if (cin >> id) {
+
+               cin.ignore(
+
+                   numeric_limits<streamsize>::max(), '\n');
+
+               return id;
+
+           }
+
+           cout << "Invalid input. Please enter a number.\n";
+
+           cin.clear();
+
+           cin.ignore(
+
+               numeric_limits<streamsize>::max(), '\n');
+
+    }
+
+}
+
+// Main function
+
+int main() {
+
+    const string filename = "library.txt";
+
+    Library library;
+
+    try {
+
+           library.loadFromFile(filename);
+
+    }
+
+    catch (const exception& e) {
+
+           cout << "Error loading file: " << e.what() << '\n';
+
+    }
+
+    int choice = 0;
+
+    do {
+
+           cout << "\n========== LIBRARY MANAGEMENT SYSTEM ==========\n";
+
+           cout << "1. Add Book\n";
+
+           cout << "2. Search Book\n";
+
+           cout << "3. Display All Books\n";
+
+           cout << "4. Issue Book\n";
+
+           cout << "5. Return Book\n";
+
+           cout << "6. Exit\n";
+
+cout << "Enter your choice: ";
+
+if (!(cin >> choice)) {
+
+    cout << "Invalid input. Please enter a number from 1 to 6.\n";
+
+    cin.clear();
+
+    cin.ignore(
+
+        numeric_limits<streamsize>::max(), '\n');
+
+    continue;
+
+}
+
+cin.ignore(
+
+    numeric_limits<streamsize>::max(), '\n');
+
+try {
+
+    if (choice == 1) {
+
+        int id = readBookId();
+
+        string title, author;
+
+        cout << "Enter Book Title: ";
+
+        getline(cin, title);
+
+        cout << "Enter Author Name: ";
+
+        getline(cin, author);
+
+        if (id <= 0 || title.empty() || author.empty())
+
+              throw runtime_error(
+
+                   "ID, title and author must be valid and non-empty.");
+
+        if (title.find('|') != string::npos ||
+
+              author.find('|') != string::npos)
+
+              throw runtime_error(
+
+                   "Do not use the | character in title or author.");
+
+        library.addBook(Book(id, title, author));
+
+        library.saveToFile(filename);
+
+        cout << "Book added successfully.\n";
+
+    }
+
+    else if (choice == 2) {
+
+        library.searchBook(readBookId());
+
+    }
+
+    else if (choice == 3) {
+
+        library.listBooks();
+
+    }
+
+    else if (choice == 4) {
+
+        library.issueBook(readBookId());
+
+        library.saveToFile(filename);
+
+    }
+
+    else if (choice == 5) {
+
+        library.returnBook(readBookId());
+
+        library.saveToFile(filename);
+
+    }
+
+    else if (choice == 6) {
+
+        library.saveToFile(filename);
+
+        cout << "Library records saved. Thank you!\n";
+
+    }
+
+    else {
+
+        cout << "Please enter a choice from 1 to 6.\n";
+
+    }
+
+}
+
+catch (const exception& e) {
+
+    cout << "Error: " << e.what() << '\n';
+
+          }
+
+     } while (choice != 6);
+
+     return 0;
+
+}
