@@ -1,0 +1,45 @@
+#include <iostream>
+    using namespace std;
+
+    int add(int a, int b) {
+        return a + b;
+    }
+
+    double add(double a, double b) {
+        return a + b;
+    }
+
+    class ComplexNumber {
+    private:
+        double real, imaginary;
+
+    public:
+        ComplexNumber(double r = 0, double i = 0) : real(r), imaginary(i) {}
+
+         ComplexNumber operator+(const ComplexNumber& other) const {
+             return ComplexNumber(real + other.real,
+                                  imaginary + other.imaginary);
+         }
+
+         void display() const {
+             cout << real << " + " << imaginary << "i";
+         }
+    };
+
+    int main() {
+        cout << "Name: Tilak Kaple\n";
+        cout << "Integer addition: " << add(5, 3) << '\n';
+        cout << "Decimal addition: " << add(2.5, 1.5) << '\n';
+
+         ComplexNumber first(2, 3), second(4, 5);
+         ComplexNumber sum = first + second;
+
+         cout << "First complex number: ";
+         first.display();
+         cout << "\nSecond complex number: ";
+         second.display();
+         cout << "\nSum: ";
+         sum.display();
+         cout << '\n';
+         return 0;
+    }
