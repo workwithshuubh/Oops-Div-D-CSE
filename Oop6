@@ -1,0 +1,47 @@
+#include <iostream>
+    using namespace std;
+
+    class Shape {
+    public:
+        virtual double area() const = 0;
+        virtual ~Shape() = default;
+    };
+
+    class Circle : public Shape {
+    private:
+        double radius;
+    public:
+        Circle(double r) : radius(r) {}
+        double area() const override { return 3.14159 * radius * radius; }
+    };
+
+    class Rectangle : public Shape {
+    private:
+        double length, breadth;
+    public:
+        Rectangle(double l, double b) : length(l), breadth(b) {}
+        double area() const override { return length * breadth; }
+    };
+
+    class Triangle : public Shape {
+    private:
+        double base, height;
+    public:
+        Triangle(double b, double h) : base(b), height(h) {}
+        double area() const override { return 0.5 * base * height; }
+    };
+
+    int main() {
+        cout << "Name: Tilak Kaple\n";
+        Circle circle(3);
+        Rectangle rectangle(4, 5);
+        Triangle triangle(6, 4);
+
+        Shape* shapes[] = {&circle, &rectangle, &triangle};
+        const char* names[] = {"Circle", "Rectangle", "Triangle"};
+
+        for (int i = 0; i < 3; ++i)
+            cout << names[i] << " area: " << shapes[i]->area() << '\n';
+
+        return 0;
+    }
