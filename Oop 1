@@ -1,0 +1,33 @@
+#include <iostream>
+    #include <string>
+    using namespace std;
+
+    int main() {
+        cout << "Name: Tilak Kaple" << '\n';
+
+        const double TAX_RATE = 0.05;
+        string itemName;
+        int quantity;
+        double price;
+
+        cout << "Enter item name: ";
+        cin >> itemName;
+        cout << "Enter quantity: ";
+        cin >> quantity;
+        cout << "Enter price per item: ";
+        cin >> price;
+
+        double subtotal = quantity * price;
+        double tax = subtotal * TAX_RATE;
+        double total = subtotal + tax;
+
+        cout << "\nItem: " << itemName << '\n';
+        cout << "Quantity: " << quantity << '\n';
+        cout << "Price per item: " << price << '\n';
+        cout << "Subtotal: " << subtotal << '\n';
+        cout << "Tax (5%): " << tax << '\n';
+        cout << "Total: " << total << '\n';
+        cout << "Quantity is positive: " << (quantity > 0) << '\n';
+        cout << "Valid bill: " << (quantity > 0 && price > 0) << '\n';
+        return 0;
+    }
