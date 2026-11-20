@@ -1,0 +1,70 @@
+#include <iostream>
+    #include <exception>
+    #include <string>
+    using namespace std;
+
+    class InvalidAmount : public exception {
+    public:
+        const char* what() const noexcept override {
+            return "Amount must be greater than zero.";
+        }
+    };
+
+    class InsufficientFunds : public exception {
+    public:
+        const char* what() const noexcept override {
+            return "Insufficient balance.";
+        }
+    };
+
+    class BankAccount {
+    private:
+        double balance;
+
+    public:
+        BankAccount(double initial) : balance(initial) {}
+
+         void withdraw(double amount) {
+             if (amount <= 0) throw InvalidAmount();
+             if (amount > balance) throw InsufficientFunds();
+             balance -= amount;
+             cout << "Withdrawal successful: " << amount << '\n';
+         }
+
+         void showBalance() const {
+             cout << "Current balance: " << balance << '\n';
+         }
+    };
+
+    int main() {
+        cout << "Name: Tilak Kaple\n";
+         BankAccount account(1000);
+
+         try {
+             account.withdraw(300);
+         } catch (const InvalidAmount& e) {
+             cout << e.what() << '\n';
+         } catch (const InsufficientFunds& e) {
+             cout << e.what() << '\n';
+         }
+
+         try {
+
+         account.withdraw(900);
+     } catch (const InvalidAmount& e) {
+         cout << e.what() << '\n';
+     } catch (const InsufficientFunds& e) {
+         cout << e.what() << '\n';
+     }
+
+     try {
+         account.withdraw(0);
+     } catch (const InvalidAmount& e) {
+         cout << e.what() << '\n';
+     } catch (const InsufficientFunds& e) {
+         cout << e.what() << '\n';
+     }
+
+     account.showBalance();
+     return 0;
+ }
